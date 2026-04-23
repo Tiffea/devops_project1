@@ -1,0 +1,2 @@
+#pip reads it and install everything written below
+flask==3.0.0
