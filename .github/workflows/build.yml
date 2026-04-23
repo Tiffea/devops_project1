@@ -1,11 +1,16 @@
+#как называется workflow в Actions
 name: Build Docker Image
 
+#когда кто-то делает пуш в ветке main - делай jobs
 on:
   push:
     branches:
       - main
 
+
 jobs:
+#запустить убунту; использовать модуль который скачает код на виртуальную машину
+#запусть там команду сборки докер образа
   build:
     runs-on: ubuntu-latest
 
