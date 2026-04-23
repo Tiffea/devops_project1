@@ -6,7 +6,7 @@ app = Flask(__name__)
 #create main page
 @app.route("/")
 def home():
-	return "Hello? My Devops app working!"
+	return "Hi Im alive"
 
 
 #server answers if it's fine
