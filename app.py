@@ -9,7 +9,6 @@ def home():
 	return "Hi Im alive"
 
 
-#server answers if it's finee
 @app.route("/health")
 
 def health():
