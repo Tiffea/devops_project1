@@ -3,3 +3,5 @@ services:
     build: .
     ports:
       - "5001:5000"
+# до этого файла image собирался как docker build -p 5001:5000 myapp
+#теперь можно написать docker compose up
