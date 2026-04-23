@@ -6,7 +6,7 @@ app = Flask(__name__)
 #create main page
 @app.route("/")
 def home():
-	return "Hi Im alive"
+	return "Hi Im alive and CI is working"
 
 
 @app.route("/health")
