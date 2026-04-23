@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo App</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; }
+        input { padding: 8px; width: 70%; }
+        button { padding: 8px 16px; cursor: pointer; }
+        li { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Todo List</h1>
+    <input id="input" placeholder="Новая задача..." />
+    <button onclick="addTodo()">Добавить</button>
+    <ul id="list"></ul>
+
+    <script>
+        async function loadTodos() {
+            const res = await fetch('/todos');
+            const todos = await res.json();
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+            todos.forEach(t => {
+                list.innerHTML += `<li>${t.title} <button onclick="deleteTodo(${t.id})">Удалить</button></li>`;
+            });
+        }
+
+        async function addTodo() {
+            const title = document.getElementById('input').value;
+            await fetch('/todos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title})
+            });
+            loadTodos();
+        }
+
+        async function deleteTodo(id) {
+            await fetch('/todos/' + id, {method: 'DELETE'});
+            loadTodos();
+        }
+
+        loadTodos();
+    </script>
+</body>
+</html>

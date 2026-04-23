@@ -1,20 +1,40 @@
-#connect lib - flack so the app will answer to our actions
+from flask import Flask, jsonify, request, render_template
 
-from flask import Flask
 app = Flask(__name__)
 
-#create main page
+# Хранилище задач в памяти
+todos = []
+counter = 1
 @app.route("/")
-def home():
-	return "Hi Im alive and CI is working"
-
+def index():
+    return render_template("index.html")
 
 @app.route("/health")
-
 def health():
-	return "OK", 200
+    return "OK", 200
 
-#this part I don't understand
+@app.route("/todos", methods=["GET"])
+def get_todos():
+    return jsonify(todos)
+
+@app.route("/todos", methods=["POST"])
+def create_todo():
+    global counter
+    data = request.json
+    todo = {
+        "id": counter,
+        "title": data["title"],
+        "done": False
+    }
+    todos.append(todo)
+    counter += 1
+    return jsonify(todo), 201
+
+@app.route("/todos/<int:id>", methods=["DELETE"])
+def delete_todo(id):
+    global todos
+    todos = [t for t in todos if t["id"] != id]
+    return jsonify({"message": "Deleted"}), 200
+
 if __name__ == "__main__":
-	app.run(host="0.0.0.0", port=5000)
-
+    app.run(host="0.0.0.0", port=5000)
