@@ -1,5 +1,5 @@
 #как называется workflow в Actions
-name: Build Docker Image and Push it
+name: Build and Push docker image
 
 #когда кто-то делает пуш в ветке main - делай jobs
 on:
@@ -24,8 +24,20 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push doker Image
+      - name: Build and Push docker Image
         uses: docker/build-push-action@v5
         with:
           push: true
           tags: tiffea/devops-project1:latest
+      
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker pull tiffea/devops-project1:latest
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 5000:5000 tiffea/devops-project1:latest

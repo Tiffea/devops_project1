@@ -1,6 +1,7 @@
 #slim - упрощенная версия
 FROM python:3.11-slim
 
+#теперь все команды от лица этой дирректории
 WORKDIR /app
 
 COPY requirements.txt .
