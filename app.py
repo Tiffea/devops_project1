@@ -1,6 +1,7 @@
+from prometheus_flask_exporter import PrometheusMetrics
 from flask import Flask, jsonify, request, render_template
-
 app = Flask(__name__)
+metrics = PrometheusMetrics(app)
 
 # Хранилище задач в памяти
 todos = []
