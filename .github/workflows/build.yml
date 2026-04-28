@@ -37,7 +37,6 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull tiffea/devops-project1:latest
-            docker stop myapp || true
-            docker rm myapp || true
-            docker run -d --name myapp -p 5000:5000 tiffea/devops-project1:latest
+            cd ~/devops_project1
+            docker compose pull
+            docker compose up -d
