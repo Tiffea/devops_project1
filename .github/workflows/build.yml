@@ -38,6 +38,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ~/devops_project1
-            git pull main
+            git pull
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
