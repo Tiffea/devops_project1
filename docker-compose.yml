@@ -10,10 +10,17 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
     restart: always
 
   grafana:
     image: grafana/grafana
     ports:
       - "3000:3000"
+    volumes:
+      -grafana_data:/var/lib/grafana
     restart: always
+
+volumes:
+  prometheus_data:
+  grafana_data:
