@@ -17,3 +17,7 @@ spec:
           image: tiffea/devops-project1:latest
           ports:
             - containerPort: 5000
+            #откуда брать конфиг
+          envFrom:
+            - configMapRef:
+                name: todo-app-config
