@@ -16,5 +16,6 @@ COPY . .
 EXPOSE 5000
 
 #запусти процесс python и app.py
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--workers=4", "--bind=0.0.0.0:5000", "app:app"]
 
+#"app:app" - find variable app in file app.py
