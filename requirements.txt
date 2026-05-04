@@ -1,3 +1,4 @@
-#pip reads it and install everything written below
-flask==3.0.0
-prometheus-flask-exporter==0.23.1
+flask==3.0.0 #requests
+prometheus-flask-exporter==0.23.1 #observability
+psycopg2-binary==2.9.9 #library for PostgreSQL connection
+flask-sqlalchemy==3.1.1 #work with DB on python
