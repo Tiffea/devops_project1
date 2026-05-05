@@ -1,0 +1,35 @@
+---
+# set an inventory(from ansible.cfg) and get root right
+- name: Setup DevOps Project Server
+  hosts: webservers
+  become: true 
+
+#real tasks on a server
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+
+    - name: Check if Docker installed
+      command: docker --version
+      register: docker_check
+      ignore_errors: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+      when: docker_check.failed
+#??
+    - name: Add ubuntu user to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Clone repository
+      git:
+        repo: https://github.com/Tiffea/devops_project1.git
+        dest: /home/ubuntu/devops_project1
+        update: yes
+#module -> parameter

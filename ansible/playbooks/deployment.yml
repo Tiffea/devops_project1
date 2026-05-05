@@ -1,0 +1,31 @@
+---
+- name: Deploy DevOps Project
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Pull latest code
+      git:
+        repo: https://github.com/Tiffea/devops_project1.git
+        dest: /home/ubuntu/devops_project1
+        update: yes
+
+    - name: Pull latest Docker images
+      command: docker compose -f docker-compose.prod.yml pull
+      args:
+        chdir: /home/ubuntu/devops_project1
+
+    - name: Restart containers
+      command: docker compose -f docker-compose.prod.yml up -d
+      args:
+        chdir: /home/ubuntu/devops_project1
+
+    - name: Check containers are running
+      command: docker compose -f docker-compose.prod.yml ps
+      args:
+        chdir: /home/ubuntu/devops_project1
+      register: result
+
+    - name: Show containers status
+      debug:
+        msg: "{{ result.stdout }}"
