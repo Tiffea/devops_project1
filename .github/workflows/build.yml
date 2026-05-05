@@ -29,18 +29,22 @@ jobs:
         with:
           push: true
           tags: tiffea/devops-project1:latest
-      
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/devops_project1
-            git pull
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d
+
+      - name: Install Ansible
+        run: pip install ansible
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/devops-key.pem
+          chmod 600 ~/.ssh/devops-key.pem
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy with Ansible
+        run: |
+          cd ansible
+          ansible-playbook playbooks/deploy.yml
+
 
 ##git pull - download the newest version of app from github
 ##docker compose pull - download from dockerhub
