@@ -5,26 +5,31 @@
 ## Overview
 Flask app with CI/CD, containerisation, monitoring, and infrastructure automation.
 
-## Architecture
-Client → Ingress → Service → Pods (Flask app)
+## Quick Start
+\```bash
+git clone https://github.com/Tiffea/devops_project1
+cd devops_project1
+docker compose up --build
+\```
 
-Monitoring:
-- Prometheus scrapes metrics
-- Grafana visualisation
+## Architecture
+Client → Nginx → Flask (Gunicorn) → PostgreSQL
+                      ↓
+              Prometheus → Grafana
 
 ## Tech Stack
 - Python (Flask)
 - Docker / Docker Compose
-- Kubernetes (k3s, local)
+- Kubernetes (Kubernetes manifests tested locally with minikube)
 - Terraform
 - GitHub Actions
 - AWS EC2
 
 ## CI/CD
 On every push:
-1. Build Docker image
-2. Run tests
-3. (Optional) push image
+1. Build an image
+2. Push image to Docker Hub
+3. Deploy to server via SSH
 
 ## Terraform
 Provisions AWS EC2 instance (t3.micro).
