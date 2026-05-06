@@ -1,0 +1,68 @@
+replicaCount: 1
+
+image:
+  repository: tiffea/devops-project1
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: NodePort
+  port: 5000
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+postgresql:
+  auth:
+    username: postgres
+    password: password123
+    database: todos
+  primary:
+    persistence:
+      enabled: true
+      size: 1Gi
+
+env:
+  - name: DATABASE_URL
+    value: "postgresql://postgres:password123@devops-project1-postgresql:5432/todos"
