@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+
+kind: Application
+
+metadata:
+  name: devops-project1 #where is it lives
+  namespace: argocd
+
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Tiffea/devops_project1.git
+    targetRevision: HEAD #the last commit
+    path: helm-chart #argocd looks on this file in git repository
+
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true #меняем точку зрения на гит - теперь все изменения только через гит репозиторий и ничег нельзя править самому
+      selfHeal: true
