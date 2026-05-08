@@ -11,7 +11,7 @@
         update: yes
 
     - name: Clean docker to free space
-      command:
+      command: docker system prune -af
       args:
         chdir: /home/ubuntu/devops_project1
 
