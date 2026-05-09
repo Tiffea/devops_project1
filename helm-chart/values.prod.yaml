@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: tiffea/devops_project1
+  repository: tiffea/devops-project1
   pullPolicy: Always
   tag: "latest"
 
