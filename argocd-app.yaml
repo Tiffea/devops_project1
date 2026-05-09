@@ -1,5 +1,4 @@
 apiVersion: argoproj.io/v1alpha1
-
 kind: Application
 
 metadata:
@@ -12,7 +11,9 @@ spec:
     repoURL: https://github.com/Tiffea/devops_project1.git
     targetRevision: HEAD #the last commit
     path: helm-chart #argocd looks on this file in git repository
-
+    helm:
+      valueFiles:
+        - values.prod.yaml
 
   destination:
     server: https://kubernetes.default.svc
