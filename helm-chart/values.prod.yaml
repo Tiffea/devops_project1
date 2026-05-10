@@ -3,7 +3,7 @@ replicaCount: 1
 image:
   repository: tiffea/devops-project1
   pullPolicy: Always
-  tag: "broken-version"
+  tag: "latest"
 
 service:
   type: NodePort
