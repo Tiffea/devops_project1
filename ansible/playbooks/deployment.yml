@@ -3,7 +3,7 @@
   hosts: webservers
   become: true
 
-  vars:
+  vars: #variables
     project_dir: /home/ubuntu/devops_project1
     compose_file: docker-compose.prod.yml
     repo_url: https://github.com/Tiffea/devops_project1
@@ -11,31 +11,34 @@
   tasks:
     - name: Pull latest code
       git:
-        repo: https://github.com/Tiffea/devops_project1.git
-        dest: /home/ubuntu/devops_project1
+        repo: "{{ repo_url}}"
+        dest: "{{ project_dir}}"
         update: yes
+      notify: Restart containers
+    
 
     - name: Clean docker to free space
       command: docker system prune -af
       args:
-        chdir: /home/ubuntu/devops_project1
+        chdir: "{{ project_dir }}"
 
     - name: Pull latest Docker images
       command: docker compose -f docker-compose.prod.yml pull
       args:
-        chdir: /home/ubuntu/devops_project1
-
-    - name: Restart containers
-      command: docker compose -f docker-compose.prod.yml up -d
-      args:
-        chdir: /home/ubuntu/devops_project1
+        chdir: "{{ project_dir}}"
 
     - name: Check containers are running
       command: docker compose -f docker-compose.prod.yml ps
       args:
-        chdir: /home/ubuntu/devops_project1
+        chdir: "{{ project_dir}}"
       register: result
 
     - name: Show containers status
       debug:
         msg: "{{ result.stdout }}"
+
+  handlers:
+    - name: Restart containers
+      command: docker compose -f {{compose_file}} up -d
+      args:
+        chdir: "{{ project_dir}}"
