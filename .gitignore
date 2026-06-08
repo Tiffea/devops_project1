@@ -1,4 +1,66 @@
+# =========================
+# Python
+# =========================
 __pycache__/
 *.pyc
-.env
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+
+# =========================
+# IDE / OS
+# =========================
+.idea/
+.vscode/
 .DS_Store
+*.swp
+
+# =========================
+# Docker
+# =========================
+*.log
+docker-compose.override.yml
+
+# =========================
+# Helm
+# =========================
+# dependencies (можно коммитить charts/, но обычно не нужно если используешь repo-based deps)
+*/charts/
+
+
+# =========================
+# Kubernetes / manifests
+# =========================
+# (если ты НЕ хранишь raw manifests — можно игнорировать полностью)
+*.kubeconfig
+
+# =========================
+# Terraform
+# =========================
+*.tfstate
+*.tfstate.*
+.terraform/
+crash.log
+
+# =========================
+# Ansible
+# =========================
+*.retry
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Monitoring
+# =========================
+# Prometheus data (если вдруг локально)
+prometheus_data/
