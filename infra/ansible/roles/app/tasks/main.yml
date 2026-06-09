@@ -1,5 +1,4 @@
 ---
----
 - name: Check if project exists
   stat:
     path: "{{ project_dir }}"
