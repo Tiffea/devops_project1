@@ -1,42 +1,66 @@
-# DevOps Flask App
+
+```markdown
+# DevOps Project 1 — Flask Todo App
 
 ![CI/CD](https://github.com/Tiffea/devops_project1/actions/workflows/build.yml/badge.svg)
 
 ## Overview
-Flask app with CI/CD, containerisation, monitoring, and infrastructure automation.
-
-## Quick Start
-\```bash
-git clone https://github.com/Tiffea/devops_project1
-cd devops_project1
-docker compose up --build
-\```
+Production-ready Flask todo app with full DevOps pipeline: CI/CD, containerisation, 
+Kubernetes orchestration, monitoring, and infrastructure as code.
 
 ## Architecture
+```
 Client → Nginx → Flask (Gunicorn) → PostgreSQL
                       ↓
               Prometheus → Grafana
+```
 
 ## Tech Stack
-- Python (Flask)
-- Docker / Docker Compose
-- Kubernetes (Kubernetes manifests tested locally with minikube)
-- Terraform
-- GitHub Actions
-- AWS EC2
+| Layer | Tools |
+|-------|-------|
+| App | Python / Flask / Gunicorn |
+| Containerisation | Docker / Docker Compose |
+| Orchestration | Kubernetes / Helm / ArgoCD |
+| CI/CD | GitHub Actions |
+| Infrastructure | Terraform / Ansible |
+| Monitoring | Prometheus / Grafana |
+| Cloud | AWS EC2 |
 
-## CI/CD
-On every push:
-1. Build an image
-2. Push image to Docker Hub
-3. Deploy to server via SSH
+## Project Structure
+```
+├── app/          # Flask application
+├── infra/        # Terraform + Ansible roles
+├── k8s/          # Helm chart + ArgoCD
+└── monitoring/   # Prometheus config
+```
 
-## Terraform
-Provisions AWS EC2 instance (t3.micro).
+## CI/CD Pipeline
+On every push to main:
+1. Build Docker image
+2. Push to Docker Hub
+3. Deploy to AWS EC2 via Ansible
 
-Creates:
-- EC2 instance (Ubuntu)
-- Security group (inbound/outbound rules)
+## Infrastructure
+Terraform provisions:
+- AWS EC2 (t3.micro, Ubuntu)
+- Security Group (ports 22/80/5000)
 
-Note:
-App is not deployed automatically.
+Ansible roles:
+- common → system packages
+- docker → Docker installation
+- nginx  → reverse proxy
+- app    → application deployment
+
+## Local Development
+```bash
+git clone https://github.com/Tiffea/devops_project1
+cd devops_project1
+docker compose up --build
+```
+
+## Kubernetes (local)
+```bash
+minikube start
+helm install devops-project1 ./k8s/helm/my-app
+```
+```
