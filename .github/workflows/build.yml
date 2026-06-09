@@ -43,7 +43,7 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
-          ansible-playbook -i infra/ansible/inventory.ini infra/ansible/playbooks/deployment.yml
+          ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml
 
 
 ##git pull - download the newest version of app from github
