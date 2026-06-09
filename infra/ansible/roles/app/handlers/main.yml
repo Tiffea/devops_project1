@@ -1,0 +1,5 @@
+---
+- name: Restart containers
+  command: docker compose -f {{ compose_file }} up -d
+  args:
+    chdir: "{{ project_dir }}"

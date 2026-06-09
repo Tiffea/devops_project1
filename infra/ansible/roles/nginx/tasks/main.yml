@@ -1,0 +1,22 @@
+---
+- name: Remove default nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Copy nginx config
+  copy:
+    src: nginx.conf
+    dest: /etc/nginx/sites-available/devops_project1
+
+- name: Enable nginx site
+  file:
+    src: /etc/nginx/sites-available/devops_project1
+    dest: /etc/nginx/sites-enabled/devops_project1
+    state: link
+
+- name: Restart nginx
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

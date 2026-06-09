@@ -1,0 +1,15 @@
+---
+- name: Deploy DevOps Project
+  hosts: webservers
+  become: true
+
+  vars:
+    project_dir: /home/ubuntu/devops_project1
+    compose_file: docker-compose.prod.yml
+    repo_url: https://github.com/Tiffea/devops_project1
+
+  roles:
+    - common
+    - docker
+    - nginx
+    - app

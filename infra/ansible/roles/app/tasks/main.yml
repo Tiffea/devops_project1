@@ -1,0 +1,42 @@
+---
+---
+- name: Check if project exists
+  stat:
+    path: "{{ project_dir }}"
+  register: project_exists
+
+- name: Clone repo if first deploy
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ project_dir }}"
+  when: not project_exists.stat.exists
+
+- name: Pull latest code if exists
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ project_dir }}"
+    update: yes
+  when: project_exists.stat.exists
+  notify: Restart containers
+
+- name: Clean docker to free space
+  command: docker system prune -af
+  args:
+    chdir: "{{ project_dir }}"
+
+- name: Pull latest Docker images
+  command: docker compose -f {{ compose_file }} pull
+  args:
+    chdir: "{{ project_dir }}"
+
+- name: Start containers on first deploy
+  command: docker compose -f {{ compose_file }} up -d
+  args:
+    chdir: "{{ project_dir }}"
+  when: not project_exists.stat.exists
+
+- name: Check containers are running
+  command: docker compose -f {{ compose_file }} ps
+  args:
+    chdir: "{{ project_dir }}"
+  register: result

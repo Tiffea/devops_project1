@@ -27,6 +27,7 @@ jobs:
       - name: Build and Push docker Image
         uses: docker/build-push-action@v5
         with:
+          context: ./app #take the dockerfile from this dir
           push: true
           tags: tiffea/devops-project1:latest
 
@@ -42,7 +43,7 @@ jobs:
 
       - name: Deploy with Ansible
         run: |
-          ansible-playbook -i ansible/inventory.ini ansible/playbooks/deployment.yml
+          ansible-playbook -i infra/ansible/inventory.ini infra/ansible/playbooks/deployment.yml
 
 
 ##git pull - download the newest version of app from github
