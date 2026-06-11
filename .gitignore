@@ -31,14 +31,14 @@ docker-compose.override.yml
 # =========================
 # Helm
 # =========================
-# dependencies (можно коммитить charts/, но обычно не нужно если используешь repo-based deps)
+# dependencies
 */charts/
 
 
 # =========================
 # Kubernetes / manifests
 # =========================
-# (если ты НЕ хранишь raw manifests — можно игнорировать полностью)
+
 *.kubeconfig
 
 # =========================
@@ -58,9 +58,3 @@ crash.log
 # Logs
 # =========================
 *.log
-
-# =========================
-# Monitoring
-# =========================
-# Prometheus data (если вдруг локально)
-prometheus_data/

@@ -16,7 +16,7 @@ resource "aws_security_group" "devops_sg" {
   name        = "devops-project-sg"
   description = "Security group for Devops project"
 
-  #ssh?
+  #ssh
   ingress {
     from_port   = 22
     to_port     = 22
@@ -24,21 +24,21 @@ resource "aws_security_group" "devops_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  #http?
+  #http
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  #https
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  #flask
+  #flask app
   ingress {
     from_port   = 5000
     to_port     = 5000

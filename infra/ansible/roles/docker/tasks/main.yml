@@ -48,7 +48,6 @@
 - name: Update apt cache
   apt:
     update_cache: yes
-  when: docker_repo.changed
 
 - name: Install Docker
   apt:
