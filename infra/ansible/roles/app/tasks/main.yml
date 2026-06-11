@@ -17,7 +17,7 @@
     update: yes
   when: project_exists.stat.exists
   notify: Restart containers
-
+#if notify = true -> summon handler file at the end of all the rest jobs
 - name: Clean docker to free space
   command: docker system prune -af
   args:

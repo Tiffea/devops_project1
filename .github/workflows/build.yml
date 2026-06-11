@@ -1,16 +1,14 @@
-#как называется workflow в Actions
-name: Build and Push docker image
 
-#когда кто-то делает пуш в ветке main - делай jobs
+name: Push to DockerHub and Deploy with Ansible 
+
 on:
   push:
     branches:
       - main
 
-
+# Jobs are not separated into build/deploy stages because there is only one contributor and one branch.
+# change when staging environment or team is added.
 jobs:
-#запустить убунту; использовать модуль который скачает код на виртуальную машину
-#запусть там команду сборки докер образа
   build:
     runs-on: ubuntu-latest
 
@@ -49,7 +47,3 @@ jobs:
         run: |
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
           -e "certbot_email=${{ secrets.SECRET_EMAIL }}"
-
-
-##git pull - download the newest version of app from github
-##docker compose pull - download from dockerhub

@@ -6,20 +6,19 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
-# Подключение к базе данных
+# BD connection
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
     'DATABASE_URL',
     'postgresql://postgres:password@db:5432/todos'
 )
 db = SQLAlchemy(app)
 
-# Модель — описание таблицы в базе данных
+# BD model description
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     done = db.Column(db.Boolean, default=False)
 
-# Создать таблицы при запуске
 with app.app_context():
     db.create_all()
 
