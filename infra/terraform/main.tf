@@ -32,6 +32,12 @@ resource "aws_security_group" "devops_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   #flask
   ingress {
     from_port   = 5000
@@ -75,13 +81,13 @@ resource "aws_instance" "devops_server" {
 }
 
 resource "aws_eip" "devops_eip" {
-    instance = aws_instance.devops_server.id
+  instance = aws_instance.devops_server.id
 
-    tags = {
-        Name = "devops-project-eip"
-    }
+  tags = {
+    Name = "devops-project-eip"
+  }
 }
 
 output "new_server_ip" {
-    value = aws_eip.devops_eip.public_ip
+  value = aws_eip.devops_eip.public_ip
 }
