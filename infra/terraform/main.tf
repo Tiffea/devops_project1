@@ -1,9 +1,13 @@
-#описываем что нужно чтобы начать работу(провайдер,версию и регион)
+
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
+    }
+    http = {
+      source = "hashicorp/http"
+      version = "~> 3.4"
     }
   }
 }
@@ -12,62 +16,14 @@ provider "aws" {
   region = "eu-north-1"
 }
 
-resource "aws_security_group" "devops_sg" {
-  name        = "devops-project-sg"
-  description = "Security group for Devops project"
-
-  #ssh
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  #http
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  #https
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  #flask app
-  ingress {
-    from_port   = 5000
-    to_port     = 5000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # Grafana
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["5.29.9.127/32"]
-  }
-  #prometheus
-  ingress {
-    from_port   = 9090
-    to_port     = 9090
-    protocol    = "tcp"
-    cidr_blocks = ["5.29.9.127/32"]
-  }
-
-  # all the traffic
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+data "http" "my_ip" {
+  url = "https://checkip.amazonaws.com/"
 }
+
+locals {
+  my_ip = "${chomp(data.http.my_ip.response_body)}/32"
+}
+
 
 resource "aws_instance" "devops_server" {
   ami                    = "ami-080254318c2d8932f"

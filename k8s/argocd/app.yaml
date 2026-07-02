@@ -20,5 +20,5 @@ spec:
     namespace: default
   syncPolicy:
     automated:
-      prune: true #меняем точку зрения на гит - теперь все изменения только через гит репозиторий и ничег нельзя править самому
+      prune: true 
       selfHeal: true
