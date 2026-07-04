@@ -11,3 +11,20 @@
       - git
       - unzip
     state: present
+  
+- name: Ensure cloud-guest-utils is installed (for growpart)
+  apt:
+    name: cloud-guest-utils
+    state: present
+
+- name: Grow root partition to use full disk
+  command: growpart /dev/nvme0n1 1
+  register: growpart_result
+  changed_when: "'NOCHANGE' not in growpart_result.stdout"
+  failed_when: growpart_result.rc != 0 and 'NOCHANGE' not in growpart_result.stdout
+
+- name: Resize filesystem to match new partition size
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme0n1p1
+    resizefs: yes

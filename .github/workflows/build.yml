@@ -1,17 +1,13 @@
-
-name: Push to DockerHub and Deploy with Ansible 
+name: Push to DockerHub; Deploy with Ansible
 
 on:
   push:
     branches:
       - main
 
-# Jobs are not separated into build/deploy stages because there is only one contributor and one branch.
-# change when staging environment or team is added.
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -29,6 +25,33 @@ jobs:
           push: true
           tags: tiffea/devops-project1:latest
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: #only this part has rights to change sequrity group
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ID }}:role/github_worker
+          aws-region: eu-north-1
+
+      - name: Get runner public IP
+        id: ip #tag
+        run: echo "ip=$(curl -s https://checkip.amazonaws.com)" >> $GITHUB_OUTPUT #AWS must be available
+
+      - name: Open SSH for runner IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ip }}/32
+
       - name: Install Ansible
         run: pip install ansible
 
@@ -38,7 +61,7 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/devops-key.pem
           chmod 600 ~/.ssh/devops-key.pem
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-      
+
       - name: Test SSH connection
         run: |
           ssh -i ~/.ssh/devops-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_HOST }} "echo connected"
@@ -47,3 +70,14 @@ jobs:
         run: |
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
           -e "certbot_email=${{ secrets.SECRET_EMAIL }}"
+
+      - name: Close SSH for runner IP
+        if: always()
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id ${{ secrets.AWS_SG_ID }} \
+            --protocol tcp --port 22 \
+            --cidr ${{ steps.ip.outputs.ip }}/32
+
+# Jobs are not separated into build/deploy stages because there is only one contributor and one branch.
+# change when staging environment or team is added.

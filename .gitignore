@@ -58,3 +58,5 @@ crash.log
 # Logs
 # =========================
 *.log
+
+README.md
