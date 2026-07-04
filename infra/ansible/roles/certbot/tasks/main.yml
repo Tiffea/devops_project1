@@ -13,5 +13,3 @@
     --non-interactive
     --agree-tos
     --email {{ certbot_email }}
-  args:
-    creates: /etc/letsencrypt/live/{{ domain }}/fullchain.pem

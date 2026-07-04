@@ -10,8 +10,14 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
+    
+- name: Check if SSL certificate exists
+  stat:
+    path: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+  register: ssl_cert
+
 - name: Copy nginx config
-  copy:
+  template:
     src: nginx.conf
     dest: /etc/nginx/sites-available/devops_project1
 
