@@ -8,9 +8,10 @@
     compose_file: docker-compose.prod.yml
     repo_url: https://github.com/Tiffea/devops_project1
     domain: tiffeadev.uk
-    certbot_email: "{{ lookup('env', 'CERTBOT_EMAIL') }}" 
+    certbot_email: "{{ lookup('env', 'CERTBOT_EMAIL') }}"
     #you can hardcode your email or set an enviromental value
     #echo 'export CERTBOT_EMAIL="youremailwithsll@example.com"' >> ~/.zshrc && source ~/.zshrc
+    postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
 
   roles:
     - common

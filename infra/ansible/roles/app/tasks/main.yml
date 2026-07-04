@@ -17,6 +17,13 @@
     update: yes
   when: project_exists.stat.exists
   notify: Restart containers
+
+- name: Create .env file with secrets
+  copy:
+    content: "POSTGRES_PASSWORD={{ postgres_password }}\n"
+    dest: "{{ project_dir }}/.env"
+    mode: '0600'
+
 #if notify = true -> summon handler file at the end of all the rest jobs
 - name: Clean docker to free space
   command: docker system prune -af
