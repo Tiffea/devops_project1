@@ -69,7 +69,9 @@ jobs:
       - name: Deploy with Ansible
         run: |
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
-          -e "certbot_email=${{ secrets.SECRET_EMAIL }}" -e "postgres_password=${{ secrets.POSTGRES_PASSWORD }}"
+          -e "certbot_email=${{ secrets.SECRET_EMAIL }}" \
+          -e "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" \
+          -e "grafana_admin_password=${{ secrets.GRAFANA_ADMIN_PASSWORD }}"
 
       - name: Re-configure AWS credentials before cleanup
         if: always()

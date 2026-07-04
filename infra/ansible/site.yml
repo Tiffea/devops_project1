@@ -12,7 +12,7 @@
     #you can hardcode your email or set an enviromental value
     #echo 'export CERTBOT_EMAIL="youremailwithsll@example.com"' >> ~/.zshrc && source ~/.zshrc
     postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
-
+    grafana_admin_password: "{{ lookup('env', 'GRAFANA_ADMIN_PASSWORD') }}"
   roles:
     - common
     - docker

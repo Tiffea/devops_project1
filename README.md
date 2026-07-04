@@ -68,6 +68,4 @@ docker compose up --build
 minikube start
 helm install devops-project1 ./k8s/helm/my-app
 ```
-
-## Notes
-<!-- личные заметки и решения — дописать самому -->
+#for notes
