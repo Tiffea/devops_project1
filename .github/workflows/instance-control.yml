@@ -1,0 +1,51 @@
+name: Instance Control
+
+on:
+  schedule:
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'instance actions'
+        required: true
+        type: choice
+        options:
+          - start
+          - stop
+          - status
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ID }}:role/Github-instance-controller
+          aws-region: eu-north-1
+
+      - name: Determine action
+        id: determine
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "action=stop" >> $GITHUB_OUTPUT
+          else
+            echo "action=${{ inputs.action }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Start or stop instance
+        run: |
+          if [ "${{ steps.determine.outputs.action }}" == "start" ]; then
+            aws ec2 start-instances --instance-ids i-0faa32e5364fb0f38
+          elif [ "${{ steps.determine.outputs.action }}" == "stop" ]; then
+            aws ec2 stop-instances --instance-ids i-0faa32e5364fb0f38
+          fi
+
+      - name: Show current status
+        run: |
+          STATE=$(aws ec2 describe-instances --instance-ids i-0faa32e5364fb0f38 --query 'Reservations[0].Instances[0].State.Name' --output text)
+          echo "### Instance status: $STATE" >> $GITHUB_STEP_SUMMARY
