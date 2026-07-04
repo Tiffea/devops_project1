@@ -71,6 +71,13 @@ jobs:
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
           -e "certbot_email=${{ secrets.SECRET_EMAIL }}"
 
+      - name: Re-configure AWS credentials before cleanup
+        if: always()
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ID }}:role/github_worker
+          aws-region: eu-north-1
+
       - name: Close SSH for runner IP
         if: always()
         run: |
