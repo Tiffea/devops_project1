@@ -28,3 +28,37 @@
     fstype: ext4
     dev: /dev/nvme0n1p1
     resizefs: yes
+
+- name: Check if swap file exists
+  stat:
+    path: /swapfile
+  register: swap_file
+
+- name: Create swap file (1G)
+  command: fallocate -l 1G /swapfile
+  when: not swap_file.stat.exists
+
+- name: Set swap file permissions
+  file:
+    path: /swapfile
+    mode: '0600'
+  when: not swap_file.stat.exists
+
+- name: Format swap file
+  command: mkswap /swapfile
+  when: not swap_file.stat.exists
+
+- name: Check if swap is already active
+  command: swapon --show=NAME --noheadings
+  register: swap_status
+  changed_when: false
+
+- name: Enable swap file
+  command: swapon /swapfile
+  when: "'/swapfile' not in swap_status.stdout"
+
+- name: Add swap file to fstab for persistence across reboots
+  lineinfile:
+    path: /etc/fstab
+    line: '/swapfile none swap sw 0 0'
+    state: present
