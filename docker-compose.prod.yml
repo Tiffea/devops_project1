@@ -18,7 +18,17 @@ services:
       - POSTGRES_DB=todos
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
+  node_exporter:
+    image: prom/node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+    restart: always
   prometheus:
     image: prom/prometheus
     ports:
