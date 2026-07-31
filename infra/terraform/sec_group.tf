@@ -1,7 +1,8 @@
 
-resource "aws_security_group" "devops_sg" {
+resource "aws_security_group" "devops1_sg" {
   name        = "devops-project-sg"
   description = "Security group for Devops project"
+  vpc_id = aws_vpc.devops1_vpc.id
 
   #ssh
   ingress {
