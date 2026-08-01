@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/Tiffea/devops_project1.git
     targetRevision: HEAD #the last commit
-    path: helm-chart #argocd looks on this file in git repository
+    path: k8s/helm/my-app #argocd looks on this file in git repository
     helm:
       valueFiles:
         - values.prod.yaml
