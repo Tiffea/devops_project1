@@ -56,3 +56,26 @@ resource "aws_security_group" "devops1_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+
+####################-----------------------------------########################
+####################-----------------------------------########################
+
+resource "aws_security_group" "devops1_db_sg" {
+  name = "devops-db-sg"
+  description = "SG for postgres for secure placement"
+  vpc_id = aws_vpc.devops1_vpc.id
+
+  ingress {
+    from_port = 5432
+    to_port = 5432
+    protocol = "tcp"
+    security_groups = [aws_security_group.devops1_sg.id]
+  }
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
