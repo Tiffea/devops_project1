@@ -63,3 +63,5 @@ crash.log
 # Secrets / local env
 # =========================
 .env
+
+problems.md

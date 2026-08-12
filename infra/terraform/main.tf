@@ -72,6 +72,7 @@ resource "aws_instance" "server_for_db" {
   key_name               = "devops-key"
   vpc_security_group_ids = [aws_security_group.devops1_db_sg.id]
   subnet_id = aws_subnet.devops1_private_subnet.id
+  iam_instance_profile = aws_iam_instance_profile.DB_instance_profile.name
   root_block_device {
     volume_size = 8
     volume_type = "gp3"
