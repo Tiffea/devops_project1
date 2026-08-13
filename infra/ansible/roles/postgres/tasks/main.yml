@@ -1,4 +1,9 @@
 ---
+- name: Ensure db project directory exists
+  file:
+    path: "{{ db_project_dir }}"
+    state: directory
+    mode: '0755'
 
 - name: copy db docker-compose-db.yml
   copy:
