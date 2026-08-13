@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - stage
 
 jobs:
   build:
@@ -54,6 +55,12 @@ jobs:
 
       - name: Install Ansible
         run: pip install ansible
+      
+      - name: install plugin for ssm-agent session in CLI
+        run: |
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" \
+          -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
 
       - name: Setup SSH key
         run: |
