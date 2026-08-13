@@ -69,13 +69,23 @@ jobs:
           chmod 600 ~/.ssh/devops-key.pem
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
+        #conciously make the step of creation the same folder just to know from logs what step caused problem if deploy fell
+      - name: Configure SSH for SSM tunnel
+        run: |
+          mkdir -p ~/.ssh
+          cat >> ~/.ssh/config << 'EOF'
+          Host i-* mi-*
+              ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"
+              StrictHostKeyChecking no
+          EOF
+
       - name: Test SSH connection
         run: |
           ssh -i ~/.ssh/devops-key.pem -o StrictHostKeyChecking=no ubuntu@${{ secrets.SSH_HOST }} "echo connected"
 
       - name: Deploy with Ansible
         run: |
-          ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml -vvv \
+          ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
           -e "certbot_email=${{ secrets.SECRET_EMAIL }}" \
           -e "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" \
           -e "grafana_admin_password=${{ secrets.GRAFANA_ADMIN_PASSWORD }}"
