@@ -1,0 +1,42 @@
+---
+
+- name: copy db docker-compose-db.yml
+  copy:
+    content: |
+      services:
+        db:
+          image: postgres:16
+          restart: always
+          environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+            - POSTGRES_DB=todos
+          volumes:
+            - postgres_data:/var/lib/postgresql/data
+
+      volumes:
+        postgres_data:
+    dest: "{{ db_project_dir }}/{{ compose_file_db }}"
+    mode: '0644'
+- name: Create .env file with secrets
+  copy:
+    content: |
+      POSTGRES_PASSWORD={{ postgres_password }}
+    dest: "{{ db_project_dir }}/.env"
+    mode: '0600'
+
+- name: Pull latest Docker images
+  command: docker compose -f {{ compose_file_db }} pull
+  args:
+    chdir: "{{ db_project_dir }}"
+
+- name: Start containers on first deploy
+  command: docker compose -f {{ compose_file_db }} up -d
+  args:
+    chdir: "{{ db_project_dir }}"
+
+- name: Check containers are running
+  command: docker compose -f {{ compose_file_db }} ps
+  args:
+    chdir: "{{ db_project_dir }}"
+  register: result

@@ -13,9 +13,23 @@
     #echo 'export CERTBOT_EMAIL="youremailwithsll@example.com"' >> ~/.zshrc && source ~/.zshrc
     postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
     grafana_admin_password: "{{ lookup('env', 'GRAFANA_ADMIN_PASSWORD') }}"
+    db_private_ip: 10.0.2.206
   roles:
     - common
     - docker
     - nginx
     - app
     - certbot
+
+- name: deploy db-server
+  hosts: dbservers
+  become: true
+
+  vars:
+    compose_file_db: docker-compose-db.yml #empty variable name (no content)
+    db_project_dir: /home/ubuntu/db
+    postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+  roles:
+    - common
+    - docker
+    - postgres
