@@ -1,4 +1,29 @@
-»
+##########################################################################
+#-----------------------------PUBLIC SUBNET------------------------------#
+#------------------------------------------------------------------------#
+
+
+resource "aws_vpc" "devops1_vpc" {
+    cidr_block = "10.0.0.0/16"
+    tags = {Name = "devops1_vpc"}
+}
+
+resource "aws_subnet" "devops1_public_subnet" {
+    vpc_id = aws_vpc.devops1_vpc.id
+    cidr_block = "10.0.1.0/24"
+}
+
+resource "aws_internet_gateway" "devops1_gateway" {
+    vpc_id = aws_vpc.devops1_vpc.id
+}
+
+resource "aws_route_table" "devops1_route_table" {
+    vpc_id = aws_vpc.devops1_vpc.id
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_internet_gateway.devops1_gateway.id
+    }
+}
 
 # linking subnet and route table to the new VPC
 resource "aws_route_table_association" "devops1_table_association" {
@@ -11,7 +36,7 @@ resource "aws_route_table_association" "devops1_table_association" {
 
 ##########################################################################
 #-----------------------------PRIVATE SUBNET-----------------------------#
-##########################################################################
+#------------------------------------------------------------------------#
 
 
 

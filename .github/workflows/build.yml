@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - stage
 
 jobs:
   build:
@@ -54,6 +55,12 @@ jobs:
 
       - name: Install Ansible
         run: pip install ansible
+      
+      - name: install plugin for ssm-agent session in CLI
+        run: |
+          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" \
+          -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
 
       - name: Setup SSH key
         run: |
@@ -61,6 +68,16 @@ jobs:
           echo "${{ secrets.SSH_KEY }}" > ~/.ssh/devops-key.pem
           chmod 600 ~/.ssh/devops-key.pem
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+
+        #conciously make the step of creation the same folder just to know from logs what step caused problem if deploy fell
+      - name: Configure SSH for SSM tunnel
+        run: |
+          mkdir -p ~/.ssh
+          cat >> ~/.ssh/config << 'EOF'
+          Host i-* mi-*
+              ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters portNumber=%p"
+              StrictHostKeyChecking no
+          EOF
 
       - name: Test SSH connection
         run: |

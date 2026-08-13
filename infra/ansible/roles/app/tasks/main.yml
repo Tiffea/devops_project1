@@ -23,6 +23,7 @@
     content: |
       POSTGRES_PASSWORD={{ postgres_password }}
       GRAFANA_ADMIN_PASSWORD={{ grafana_admin_password }}
+      DB_HOST={{ db_private_ip }}
     dest: "{{ project_dir }}/.env"
     mode: '0600'
 
