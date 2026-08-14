@@ -2,7 +2,7 @@ services:
   app:
     image: tiffea/devops-project1:latest
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     restart: always
     environment:
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@${DB_HOST}:5432/todos
