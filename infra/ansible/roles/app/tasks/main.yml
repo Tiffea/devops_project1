@@ -38,11 +38,10 @@
   args:
     chdir: "{{ project_dir }}"
 
-- name: Start containers on first deploy
-  command: docker compose -f {{ compose_file }} up -d
+- name: Start containers on deploy
+  command: docker compose -f {{ compose_file }} up -d --remove-orphans
   args:
     chdir: "{{ project_dir }}"
-  when: not project_exists.stat.exists
 
 - name: Check containers are running
   command: docker compose -f {{ compose_file }} ps
