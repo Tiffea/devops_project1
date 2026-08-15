@@ -8,12 +8,14 @@
   git:
     repo: "{{ repo_url }}"
     dest: "{{ project_dir }}"
+    version: "{{ git_branch }}"
   when: not project_exists.stat.exists
 
 - name: Pull latest code if exists
   git:
     repo: "{{ repo_url }}"
     dest: "{{ project_dir }}"
+    version: "{{ git_branch }}"
     update: yes
   when: project_exists.stat.exists
   notify: Restart containers

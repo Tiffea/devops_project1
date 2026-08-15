@@ -7,7 +7,22 @@ on:
       - stage
 
 jobs:
+  secret-scan:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          #restriction for checkout not for scanner
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build:
+    needs: secret-scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -88,7 +103,8 @@ jobs:
           ansible-playbook -i infra/ansible/inventory.ini infra/ansible/site.yml \
           -e "certbot_email=${{ secrets.SECRET_EMAIL }}" \
           -e "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" \
-          -e "grafana_admin_password=${{ secrets.GRAFANA_ADMIN_PASSWORD }}"
+          -e "grafana_admin_password=${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
+          -e "git_branch=${{ github.ref_name }}"
 
       - name: Re-configure AWS credentials before cleanup
         if: always()

@@ -7,6 +7,7 @@
     project_dir: /home/ubuntu/devops_project1
     compose_file: docker-compose.prod.yml
     repo_url: https://github.com/Tiffea/devops_project1
+    git_branch: main
     domain: tiffeadev.uk
     certbot_email: "{{ lookup('env', 'CERTBOT_EMAIL') }}"
     #you can hardcode your email or set an enviromental value
@@ -14,6 +15,7 @@
     postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
     grafana_admin_password: "{{ lookup('env', 'GRAFANA_ADMIN_PASSWORD') }}"
     db_private_ip: 10.0.2.206
+
   roles:
     - common
     - docker
