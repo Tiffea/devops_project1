@@ -63,13 +63,17 @@ affinity: {}
 postgresql:
   auth:
     username: postgres
-    password: password123
+    existingSecret: devops-project1-db-secret
     database: todos
   primary:
     persistence:
       enabled: true
       size: 1Gi
 
+#link to the existent file with actual secret
 env:
   - name: DATABASE_URL
-    value: "postgresql://postgres:password123@devops-project1-postgresql:5432/todos"
+    valueFrom:
+      secretKeyRef:
+        name: devops-project1-db-secret
+        key: database-url

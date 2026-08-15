@@ -20,5 +20,5 @@ resources:
 postgresql:
   auth:
     username: postgres
-    password: password123
+    existingSecret: devops-project1-db-secret
     database: todos
