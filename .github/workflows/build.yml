@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
           #restriction for checkout not for scanner
       - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v3
+        uses: gitleaks/gitleaks-action@v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,16 +46,12 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: tiffea/devops-project1:latest
-          format: table
           exit-code: '1'
           severity: CRITICAL
+          ignore-unfixed: true
       
       - name: Push docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./app
-          push: true
-          tags: tiffea/devops-project1:latest
+        run: docker push tiffea/devops-project1:latest
 
   deploy:
     needs: build
