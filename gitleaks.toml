@@ -1,0 +1,10 @@
+title = "gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "sealed secret are safe to publish"
+paths = [
+    '''k8s/helm/my-app/templates/secret\.yaml'''
+]
