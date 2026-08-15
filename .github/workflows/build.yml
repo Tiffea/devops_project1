@@ -34,10 +34,26 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push docker Image
+      - name: Build docker Image (locally)
         uses: docker/build-push-action@v5
         with:
           context: ./app #take the dockerfile from this dir
+          push: false
+          load: true
+          tags: tiffea/devops-project1:latest
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: tiffea/devops-project1:latest
+          format: table
+          exit-code: '1'
+          severity: CRITICAL
+      
+      - name: Push docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./app
           push: true
           tags: tiffea/devops-project1:latest
 
