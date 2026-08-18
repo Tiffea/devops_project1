@@ -33,6 +33,7 @@ locals {
 
 
 resource "aws_instance" "devops_server" {
+  #checkov:skip=CKV2_AWS_41:no need in role profile in this project
   ami                    = "ami-080254318c2d8932f"
   instance_type          = "t3.small"
   key_name               = "devops-key"
@@ -41,6 +42,11 @@ resource "aws_instance" "devops_server" {
   root_block_device {
     volume_size = 20
     volume_type = "gp3"
+  }
+  metadata_options {
+    http_tokens = "required"
+    http_endpoint = "enabled"
+    #metadata for a sserver now exists; session token is required
   }
   tags = {
     Name = "devops-project-server"
@@ -76,6 +82,10 @@ resource "aws_instance" "server_for_db" {
   root_block_device {
     volume_size = 8
     volume_type = "gp3"
+  }
+  metadata_options {
+    http_tokens = "required"
+    http_endpoint = "enabled"
   }
   tags = {
     Name = "devops-db-server"

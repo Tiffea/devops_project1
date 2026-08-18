@@ -2,8 +2,8 @@
 #-----------------------------PUBLIC SUBNET------------------------------#
 #------------------------------------------------------------------------#
 
-
 resource "aws_vpc" "devops1_vpc" {
+    #checkov:skip=CKV2_AWS_11: no need in flow loging for a study project so far
     cidr_block = "10.0.0.0/16"
     tags = {Name = "devops1_vpc"}
 }
@@ -33,6 +33,10 @@ resource "aws_route_table_association" "devops1_table_association" {
 }
 
 
+resource "aws_default_security_group" "devops1_default_sg" {
+    vpc_id = aws_vpc.devops1_vpc.id
+    # devops1_sg is now a default security group by default
+}
 
 ##########################################################################
 #-----------------------------PRIVATE SUBNET-----------------------------#

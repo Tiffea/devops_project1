@@ -21,6 +21,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
   build:
     needs: secret-scan
     runs-on: ubuntu-latest
@@ -53,8 +54,22 @@ jobs:
       - name: Push docker image
         run: docker push tiffea/devops-project1:latest
 
+
+  TFconfig-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: install checkov
+        run: pip install -U checkov
+
+      - name: checkov check
+        run: checkov -d . --framework terraform --skip-check CKV_AWS_126,CKV_AWS_135,CKV2_AWS_19
+
+
   deploy:
-    needs: build
+    needs: [build, TFconfig-check]
     runs-on: ubuntu-latest
     permissions: #only this part has rights to change sequrity group
       id-token: write
@@ -132,6 +147,3 @@ jobs:
             --group-id ${{ secrets.AWS_SG_ID }} \
             --protocol tcp --port 22 \
             --cidr ${{ steps.ip.outputs.ip }}/32
-
-# Jobs are not separated into build/deploy stages because there is only one contributor and one branch.
-# change when staging environment or team is added.
