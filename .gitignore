@@ -64,4 +64,6 @@ crash.log
 # =========================
 .env
 
-problems.md
+md_files
+
+secret.yaml

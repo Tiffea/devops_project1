@@ -40,12 +40,17 @@ jobs:
       - name: Start or stop instance
         run: |
           if [ "${{ steps.determine.outputs.action }}" == "start" ]; then
-            aws ec2 start-instances --instance-ids i-0f18485d4e36c1c20
+            aws ec2 start-instances --instance-ids i-0f18485d4e36c1c20 i-01fc1da37e4c1bcb3
           elif [ "${{ steps.determine.outputs.action }}" == "stop" ]; then
-            aws ec2 stop-instances --instance-ids i-0f18485d4e36c1c20
+            aws ec2 stop-instances --instance-ids i-0f18485d4e36c1c20 i-01fc1da37e4c1bcb3
           fi
 
       - name: Show current status
         run: |
-          STATE=$(aws ec2 describe-instances --instance-ids i-0f18485d4e36c1c20 --query 'Reservations[0].Instances[0].State.Name' --output text)
-          echo "### Instance status: $STATE" >> $GITHUB_STEP_SUMMARY
+          echo "### Instance status" >> $GITHUB_STEP_SUMMARY
+          aws ec2 describe-instances \
+            --instance-ids i-0f18485d4e36c1c20 i-01fc1da37e4c1bcb3 \
+            --query 'Reservations[].Instances[].[InstanceId,State.Name]' \
+            --output text | while read -r id state; do
+              echo "- $id: $state" >> $GITHUB_STEP_SUMMARY
+            done
