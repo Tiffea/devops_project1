@@ -15,7 +15,7 @@ resource "aws_iam_role" "github_worker" {
         {
             Effect ="Allow",
             Principal = {
-                Federated ="arn:aws:iam::515310962108:oidc-provider/token.actions.githubusercontent.com"
+                Federated ="arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
             },
             Action = "sts:AssumeRoleWithWebIdentity",
             Condition = {
@@ -107,7 +107,7 @@ resource "aws_iam_policy" "SSMconnection_policy" {
                     Effect = "Allow",
                     Action = "ssm:StartSession",
                     Resource = [
-                        "arn:aws:ec2:eu-north-1:515310962108:instance/i-01fc1da37e4c1bcb3",
+                        "arn:aws:ec2:eu-north-1:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.server_for_db.id}",
                         "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
                         #amazon-ssm-agent as a daemon process that listens to aws
                     ]
@@ -129,4 +129,28 @@ resource "aws_iam_policy" "SSMconnection_policy" {
 resource "aws_iam_role_policy_attachment" "SSM_policy_attachment_db" {
     role = aws_iam_role.github_worker.name
     policy_arn = aws_iam_policy.SSMconnection_policy.arn
+}
+
+########################################################################################
+#--------------------- CUSTOM S3 POLICY FOR DB INSTANCE-- ---------------------------------------#
+#--------------------------------------------------------------------------------------#
+
+resource "aws_iam_policy" "S3-putObject_access" {
+    name = "s3-Backup_policy"
+    description = "this policy allows to put objects into a bucket"
+    policy = jsonencode({
+        Version = "2012-10-17"
+        Statement = [
+            {
+                Effect = "Allow"
+                Action = "s3:PutObject"
+                Resource = "${aws_s3_bucket.devops1_bucket1.arn}/*"
+            }
+        ]
+    })
+}
+
+resource "aws_iam_role_policy_attachment" "S3-putObject_access_attachement" {
+  role = aws_iam_role.Role-for-EC2.name
+  policy_arn = aws_iam_policy.S3-putObject_access.arn
 }
