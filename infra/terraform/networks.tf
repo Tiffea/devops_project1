@@ -50,6 +50,7 @@ resource "aws_subnet" "devops1_private_subnet" {
 }
 
 resource "aws_eip" "devops1_nat_eip" {
+    #checkov:skip=CKV2_AWS_19: nat eip is never attached to an instance directly
     tags = {Name = "devops1_nat_eip"}
 }
 

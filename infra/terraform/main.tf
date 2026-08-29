@@ -31,8 +31,9 @@ locals {
   my_ip = "${chomp(data.http.my_ip.response_body)}/32"
 }
 
-
 resource "aws_instance" "devops_server" {
+  #checkov:skip=CKV_AWS_135: np EBS so far
+  #checkov:skip=CKV_AWS_126: no monitoring so far
   #checkov:skip=CKV2_AWS_41:no need in role profile in this project
   ami                    = "ami-080254318c2d8932f"
   instance_type          = "t3.small"
@@ -54,6 +55,7 @@ resource "aws_instance" "devops_server" {
 }
 
 resource "aws_eip" "devops_eip" {
+  #checkov:skip=CKV2_AWS_19: false positive > eip is attached
   instance = aws_instance.devops_server.id
 
   tags = {
@@ -71,8 +73,9 @@ output "new_server_ip" {
 ##########################################################################
 
 
-
 resource "aws_instance" "server_for_db" {
+  #checkov:skip=CKV_AWS_135: np EBS so far
+  #checkov:skip=CKV_AWS_126: no monitoring so far
   ami                    = "ami-080254318c2d8932f"
   instance_type          = "t3.micro"
   key_name               = "devops-key"
