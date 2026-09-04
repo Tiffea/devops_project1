@@ -1,0 +1,1 @@
+gmail_for_notifications = "mycoffeethanks@gmail.com"

@@ -10,20 +10,22 @@
 - [ x ] **A1.** Убрать `password123` из `k8s/helm/my-app/values.yaml` и `values.prod.yaml`, заменить на Kubernetes Secret 🔒
   *Пароль лежит в git открытым текстом прямо сейчас.*
 
-- [ ] **A2.** Добавить gitleaks в CI 🔒
+- [ x ] **A2.** Добавить gitleaks в CI 🔒
   *Чтобы A1 не повторился — сканер ловит секреты в коммитах.*
 
-- [ ] **A3.** Trivy: сканирование Docker-образа в `build.yml`, падать при CRITICAL 🔒
+- [ x ] **A3.** Trivy: сканирование Docker-образа в `build.yml`, падать при CRITICAL 🔒
   *Самый дешёвый security-gate, ~20 минут работы.*
 
-- [ ] **A4.** Checkov на Terraform в CI 🔒
+- [ x ] **A4.** Checkov на Terraform в CI 🔒
   *Найдёт автоматически то, что я ищу глазами: открытые SG, нешифрованные диски.*
 
-- [ ] **A5.** Исправить ARN в managed policy `StartStopInstance` ☁️
+- [ x ] **A5.** Исправить ARN в managed policy `StartStopInstance` ☁️
   *Сейчас там `i-0faa32e5364fb0f38` — не совпадает ни с одним живым инстансом. Кнопка вкл/выкл может тихо падать с AccessDenied. Проверить заодно, что это был за инстанс.*
 
 - [ ] **A6.** Бэкап Postgres в S3 по расписанию + проверка восстановления ☁️
   *Бэкапов нет вообще — худшая дыра проекта.*
+
+- [ ] budget managment
 
 ---
 
@@ -80,10 +82,8 @@
 
 ## Незакрытые хвосты
 
-- [ ] Git-таски в `roles/app/tasks/main.yml` без `version:` — пуш в `stage` деплоит код из `main`. Обходной путь: мержить stage → main. Правильный фикс: `version: "{{ git_branch }}"` + `-e "git_branch=${{ github.ref_name }}"` в `build.yml`.
 - [ ] `db_private_ip: 10.0.2.206` захардкожен в `site.yml` — сломается при пересоздании инстанса.
 - [ ] Осиротевший анонимный Docker volume на db-сервере (от `postgres-test`).
-- [ ] В `README.md` указан `t3.micro` для app-сервера, фактически `t3.small`.
 - [ ] В `site.yml` висит недописанный комментарий `#add q`.
 
 ---

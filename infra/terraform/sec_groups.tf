@@ -2,7 +2,7 @@
 resource "aws_security_group" "devops1_sg" {
   name        = "devops-project-sg"
   description = "Security group for Devops project"
-  vpc_id = aws_vpc.devops1_vpc.id
+  vpc_id      = aws_vpc.devops1_vpc.id
 
 
   ingress {
@@ -58,24 +58,24 @@ resource "aws_security_group" "devops1_sg" {
 ####################-----------------------------------########################
 
 resource "aws_security_group" "devops1_db_sg" {
-  name = "devops-db-sg"
+  name        = "devops-db-sg"
   description = "SG for postgres for secure placement"
-  vpc_id = aws_vpc.devops1_vpc.id
+  vpc_id      = aws_vpc.devops1_vpc.id
 
   ingress {
-    description = " Postgres from app SG"
-    from_port = 5432
-    to_port = 5432
-    protocol = "tcp"
+    description     = " Postgres from app SG"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
     security_groups = [aws_security_group.devops1_sg.id]
   }
   # rules for outboud DB traffic
   egress {
-  description = "HTTPS (docker hub, apt, SSM)"
-  from_port   = 443
-  to_port     = 443
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS (docker hub, apt, SSM)"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
     description = "HTTP out (apt mirrors)"

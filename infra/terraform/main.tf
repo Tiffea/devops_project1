@@ -6,7 +6,7 @@ terraform {
       version = "~> 5.0"
     }
     http = {
-      source = "hashicorp/http"
+      source  = "hashicorp/http"
       version = "~> 3.4"
     }
   }
@@ -41,13 +41,13 @@ resource "aws_instance" "devops_server" {
   instance_type          = "t3.small"
   key_name               = "devops-key"
   vpc_security_group_ids = [aws_security_group.devops1_sg.id]
-  subnet_id = aws_subnet.devops1_public_subnet.id
+  subnet_id              = aws_subnet.devops1_public_subnet.id
   root_block_device {
     volume_size = 20
     volume_type = "gp3"
   }
   metadata_options {
-    http_tokens = "required"
+    http_tokens   = "required"
     http_endpoint = "enabled"
     #metadata for a sserver now exists; session token is required
   }
@@ -82,14 +82,14 @@ resource "aws_instance" "server_for_db" {
   instance_type          = "t3.micro"
   key_name               = "devops-key"
   vpc_security_group_ids = [aws_security_group.devops1_db_sg.id]
-  subnet_id = aws_subnet.devops1_private_subnet.id
-  iam_instance_profile = aws_iam_instance_profile.DB_instance_profile.name
+  subnet_id              = aws_subnet.devops1_private_subnet.id
+  iam_instance_profile   = aws_iam_instance_profile.DB_instance_profile.name
   root_block_device {
     volume_size = 8
     volume_type = "gp3"
   }
   metadata_options {
-    http_tokens = "required"
+    http_tokens   = "required"
     http_endpoint = "enabled"
   }
   tags = {
