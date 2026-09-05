@@ -1,4 +1,4 @@
-
+#SECTION MAIN sequrity group rules
 resource "aws_security_group" "devops1_sg" {
   name        = "devops-project-sg"
   description = "Security group for Devops project"
@@ -43,7 +43,7 @@ resource "aws_security_group" "devops1_sg" {
     protocol    = "tcp"
     cidr_blocks = [local.my_ip]
   }
-  #checkov:skip=CKV_AWS_382:can be open for a compute server
+  #checkov:skip=CKV_AWS_382:can be open for a public server
   egress {
     description = "all the  outbound trafic"
     from_port   = 0
@@ -52,11 +52,9 @@ resource "aws_security_group" "devops1_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+#!SECTION
 
-
-####################-----------------------------------########################
-####################-----------------------------------########################
-
+#SECTION DB security group rules
 resource "aws_security_group" "devops1_db_sg" {
   name        = "devops-db-sg"
   description = "SG for postgres for secure placement"
@@ -92,3 +90,4 @@ resource "aws_security_group" "devops1_db_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+#!SECTION

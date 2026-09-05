@@ -4,7 +4,9 @@
 #--------------------- SSH open protocol for remote instance control ------------------#
 #--------------------------------------------------------------------------------------#
 
-
+#SECTION - CI/CD: Open port 22 > deploy > close port
+#NOTE - check if github is allowed to open only this port (not written clearly)
+#json role - allow github bot to assume role
 resource "aws_iam_role" "github_worker" {
   name        = "github_worker"
   description = "Role includes 2 permissions: open port 22 and then close it"
@@ -31,7 +33,7 @@ resource "aws_iam_role" "github_worker" {
   })
 }
 
-#custom policy -> need description
+#json policy - allows github to open and close ports
 resource "aws_iam_policy" "github_worker" {
   name        = "github-actions-sg-toggle-role"
   description = "for github actions"
@@ -43,24 +45,24 @@ resource "aws_iam_policy" "github_worker" {
           Sid    = "VisualEditor0",
           Effect = "Allow",
           Action = [
-            "ec2:RevokeSecurityGroupIngress",
-            "ec2:AuthorizeSecurityGroupIngress"
+            "ec2:RevokeSecurityGroupIngress", #close ssh (delete inboud rule)
+            "ec2:AuthorizeSecurityGroupIngress" #open ssh (add inboud rule)
           ],
           Resource = aws_security_group.devops1_sg.arn
         }
       ]
   })
 }
+
+
 #linking
 resource "aws_iam_role_policy_attachment" "github_worker" {
   role       = aws_iam_role.github_worker.name
   policy_arn = aws_iam_policy.github_worker.arn
 }
-
-########################################################################################
-#--------------------- Assume role for EC2 DB inctance --------------------------------#
-#--------------------------------------------------------------------------------------#
-
+#!SECTION
+#SECTION - Role-for-EC2: attach a role for EC2
+#set a role for EC2 service
 resource "aws_iam_role" "Role-for-EC2" {
   name        = "Role-for-EC2"
   description = "assume role on instances" #description can be changed on a place
@@ -79,21 +81,20 @@ resource "aws_iam_role" "Role-for-EC2" {
     }
   )
 }
-# "I want that agent to help me hereby I agree use if I take this role on an instance"
+
+#link policy to a created IAM role (Role-for-EC2)
 resource "aws_iam_role_policy_attachment" "SSM_attachment_db" {
   role       = aws_iam_role.Role-for-EC2.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-##EC2 cannot attach to a role without this resourse
+#instance profile attaches role to an instance
 resource "aws_iam_instance_profile" "DB_instance_profile" {
   name = "Role-for-EC2"
   role = aws_iam_role.Role-for-EC2.name
 }
-
-########################################################################################
-#--------------------- SMM CONNECTION POLICY -- ---------------------------------------#
-#--------------------------------------------------------------------------------------#
+#!SECTION
+#SECTION - SSM policy for DB
 
 resource "aws_iam_policy" "SSMconnection_policy" {
   name        = "SSMconnection_policy"
@@ -130,10 +131,8 @@ resource "aws_iam_role_policy_attachment" "SSM_policy_attachment_db" {
   role       = aws_iam_role.github_worker.name
   policy_arn = aws_iam_policy.SSMconnection_policy.arn
 }
-
-########################################################################################
-#--------------------- CUSTOM S3 POLICY FOR DB INSTANCE-- ---------------------------------------#
-#--------------------------------------------------------------------------------------#
+#!SECTION
+#SECTION - S3 custom bucket policy
 
 resource "aws_iam_policy" "S3-putObject_access" {
   name        = "s3-Backup_policy"
@@ -154,3 +153,4 @@ resource "aws_iam_role_policy_attachment" "S3-putObject_access_attachement" {
   role       = aws_iam_role.Role-for-EC2.name
   policy_arn = aws_iam_policy.S3-putObject_access.arn
 }
+#!SECTION

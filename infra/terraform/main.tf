@@ -1,4 +1,4 @@
-
+#SECTION settings
 terraform {
   required_providers {
     aws = {
@@ -12,26 +12,28 @@ terraform {
   }
 }
 
+#choose a region
 provider "aws" {
   region = "eu-north-1"
 }
 
+#returns your AWS account id
+data "aws_caller_identity" "current" {}
 
-##########################################################################
-#-----------------------------MAIN SERVER--------------------------------#
-##########################################################################
-
-
-
+#return your ip 
 data "http" "my_ip" {
   url = "https://checkip.amazonaws.com/"
 }
-data "aws_caller_identity" "current" {}
 
-
+#return your current ip for TERRAFORM NEEDS (locally)
 locals {
   my_ip = "${chomp(data.http.my_ip.response_body)}/32"
 }
+
+#!SECTION
+#SECTION - MAIN server configuration
+
+
 
 resource "aws_instance" "devops_server" {
   #checkov:skip=CKV_AWS_135: np EBS so far
@@ -55,6 +57,7 @@ resource "aws_instance" "devops_server" {
     Name = "devops-project-server"
   }
 }
+#SECTION - public EIP for the server
 
 resource "aws_eip" "devops_eip" {
   #checkov:skip=CKV2_AWS_19: false positive > eip is attached
@@ -69,12 +72,10 @@ output "new_server_ip" {
   value = aws_eip.devops_eip.public_ip
 }
 
+#!SECTION
+#!SECTION
 
-##########################################################################
-#-----------------------------DB SERVER----------------------------------#
-##########################################################################
-
-
+#SECTION DB server confugitation
 resource "aws_instance" "server_for_db" {
   #checkov:skip=CKV_AWS_135: np EBS so far
   #checkov:skip=CKV_AWS_126: no monitoring so far
@@ -96,3 +97,4 @@ resource "aws_instance" "server_for_db" {
     Name = "devops-db-server"
   }
 }
+#!SECTION

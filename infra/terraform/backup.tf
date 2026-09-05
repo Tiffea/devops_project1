@@ -10,7 +10,8 @@ resource "aws_s3_bucket" "devops1_bucket1" {
     Name = "Main_devops1_Bucket"
   }
 }
-#make a bucket more secure - restrict potential danger
+
+#block public access for this bucket
 resource "aws_s3_bucket_public_access_block" "devops1_public_access_block" {
   bucket = aws_s3_bucket.devops1_bucket1.id
 
@@ -21,7 +22,7 @@ resource "aws_s3_bucket_public_access_block" "devops1_public_access_block" {
 
 }
 
-#configure encription
+#configure encription for a bucket
 resource "aws_s3_bucket_server_side_encryption_configuration" "devops1-s3-bucket-cnfg" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   rule {
@@ -31,6 +32,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "devops1-s3-bucket
   }
 }
 
+#enable versioning for this bucket
 resource "aws_s3_bucket_versioning" "devops1_bucket1_versioning" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   versioning_configuration {
@@ -38,7 +40,7 @@ resource "aws_s3_bucket_versioning" "devops1_bucket1_versioning" {
   }
 }
 
-
+#configure rules for this bucket
 resource "aws_s3_bucket_lifecycle_configuration" "devops1_bucket1_lcongf" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   rule {

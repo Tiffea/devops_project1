@@ -1,16 +1,19 @@
+#configure a mail to notify
 variable "gmail_for_notifications" {
   description = "mail for AWS notifications"
   type       = string
   sensitive  = true
 }
 
+#NOTE - devops1_budget_threshold created cause of unexpected cost of billing at the end of august 2026
+#alert notifiator for all the incoming billing
 resource "aws_budgets_budget" "devops1_budget_threshold" {
   name         = "aws_budget_alert_messenger"
   budget_type  = "COST"
   limit_amount = "25"
   limit_unit   = "USD"
   time_unit    = "MONTHLY"
-  #no "service" because the reason is to track cost of all the services
+  #no "service" option because the reason is to track cost of all the services
 
 
   notification {

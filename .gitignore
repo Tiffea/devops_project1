@@ -48,7 +48,7 @@ docker-compose.override.yml
 *.tfstate.*
 .terraform/
 crash.log
-
+terraform.tfvars
 # =========================
 # Ansible
 # =========================
