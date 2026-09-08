@@ -1,4 +1,4 @@
-#SECTION MAIN sequrity group rules
+#SECTION - MAIN sequrity group rules
 resource "aws_security_group" "devops1_sg" {
   name        = "devops-project-sg"
   description = "Security group for Devops project"
@@ -6,7 +6,7 @@ resource "aws_security_group" "devops1_sg" {
 
 
   ingress {
-    description = " SSH from operator IP"
+    description = "SSH from operator IP"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -14,7 +14,7 @@ resource "aws_security_group" "devops1_sg" {
   }
   #checkov:skip=CKV_AWS_260:http must be public
   ingress {
-    description = " http connection to the net"
+    description = "http connection to the net"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -45,7 +45,7 @@ resource "aws_security_group" "devops1_sg" {
   }
   #checkov:skip=CKV_AWS_382:can be open for a public server
   egress {
-    description = "all the  outbound trafic"
+    description = "all the outbound trafic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -54,14 +54,14 @@ resource "aws_security_group" "devops1_sg" {
 }
 #!SECTION
 
-#SECTION DB security group rules
+#SECTION - DB security group rules
 resource "aws_security_group" "devops1_db_sg" {
   name        = "devops-db-sg"
   description = "SG for postgres for secure placement"
   vpc_id      = aws_vpc.devops1_vpc.id
 
   ingress {
-    description     = " Postgres from app SG"
+    description     = "Postgres from app SG"
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"

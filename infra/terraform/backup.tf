@@ -1,5 +1,5 @@
-
-#create a bucket
+#SECTION - S3 bucket configuration for backups
+# create a bucket
 resource "aws_s3_bucket" "devops1_bucket1" {
   #checkov:skip=CKV_AWS_144: no need in a replica on this scale
   #checkov:skip=CKV2_AWS_62: No event driven pipeline
@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "devops1_bucket1" {
   }
 }
 
-#block public access for this bucket
+# block public access for this bucket
 resource "aws_s3_bucket_public_access_block" "devops1_public_access_block" {
   bucket = aws_s3_bucket.devops1_bucket1.id
 
@@ -22,7 +22,7 @@ resource "aws_s3_bucket_public_access_block" "devops1_public_access_block" {
 
 }
 
-#configure encription for a bucket
+# configure encription for a bucket
 resource "aws_s3_bucket_server_side_encryption_configuration" "devops1-s3-bucket-cnfg" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   rule {
@@ -32,7 +32,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "devops1-s3-bucket
   }
 }
 
-#enable versioning for this bucket
+# enable versioning for this bucket
 resource "aws_s3_bucket_versioning" "devops1_bucket1_versioning" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   versioning_configuration {
@@ -40,7 +40,7 @@ resource "aws_s3_bucket_versioning" "devops1_bucket1_versioning" {
   }
 }
 
-#configure rules for this bucket
+# configure rules for this bucket
 resource "aws_s3_bucket_lifecycle_configuration" "devops1_bucket1_lcongf" {
   bucket = aws_s3_bucket.devops1_bucket1.id
   rule {
@@ -62,3 +62,5 @@ resource "aws_s3_bucket_lifecycle_configuration" "devops1_bucket1_lcongf" {
     }
   }
 }
+
+#!SECTION

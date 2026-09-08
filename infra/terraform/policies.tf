@@ -1,12 +1,8 @@
 
-
-########################################################################################
-#--------------------- SSH open protocol for remote instance control ------------------#
-#--------------------------------------------------------------------------------------#
-
-#SECTION - CI/CD: Open port 22 > deploy > close port
+#SECTION - github CI/CD: Open port 22 > deploy > close port
 #NOTE - check if github is allowed to open only this port (not written clearly)
-#json role - allow github bot to assume role
+
+# json role - allow github bot to assume role
 resource "aws_iam_role" "github_worker" {
   name        = "github_worker"
   description = "Role includes 2 permissions: open port 22 and then close it"
@@ -33,7 +29,7 @@ resource "aws_iam_role" "github_worker" {
   })
 }
 
-#json policy - allows github to open and close ports
+# json policy - allows github to open and close ports
 resource "aws_iam_policy" "github_worker" {
   name        = "github-actions-sg-toggle-role"
   description = "for github actions"
@@ -45,8 +41,8 @@ resource "aws_iam_policy" "github_worker" {
           Sid    = "VisualEditor0",
           Effect = "Allow",
           Action = [
-            "ec2:RevokeSecurityGroupIngress", #close ssh (delete inboud rule)
-            "ec2:AuthorizeSecurityGroupIngress" #open ssh (add inboud rule)
+            "ec2:RevokeSecurityGroupIngress", # close ssh (delete inboud rule)
+            "ec2:AuthorizeSecurityGroupIngress" # open ssh (add inboud rule)
           ],
           Resource = aws_security_group.devops1_sg.arn
         }
@@ -54,18 +50,19 @@ resource "aws_iam_policy" "github_worker" {
   })
 }
 
-
-#linking
+# linking policy arm and role name
 resource "aws_iam_role_policy_attachment" "github_worker" {
   role       = aws_iam_role.github_worker.name
   policy_arn = aws_iam_policy.github_worker.arn
 }
 #!SECTION
+
 #SECTION - Role-for-EC2: attach a role for EC2
-#set a role for EC2 service
+
+# json policy - allow ssm for EC2 service
 resource "aws_iam_role" "Role-for-EC2" {
   name        = "Role-for-EC2"
-  description = "assume role on instances" #description can be changed on a place
+  description = "assume role on instances" # description can be changed on a place
   assume_role_policy = jsonencode(
     {
       "Version" : "2012-10-17",
@@ -82,19 +79,21 @@ resource "aws_iam_role" "Role-for-EC2" {
   )
 }
 
-#link policy to a created IAM role (Role-for-EC2)
+# linking policy arm and role name
 resource "aws_iam_role_policy_attachment" "SSM_attachment_db" {
   role       = aws_iam_role.Role-for-EC2.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  # policy is already wirtten by AWS
 }
 
-#instance profile attaches role to an instance
+# instance profile attaches role to DB instance
 resource "aws_iam_instance_profile" "DB_instance_profile" {
   name = "Role-for-EC2"
   role = aws_iam_role.Role-for-EC2.name
 }
 #!SECTION
-#SECTION - SSM policy for DB
+
+#SECTION - action policy for SSM on DB instance
 
 resource "aws_iam_policy" "SSMconnection_policy" {
   name        = "SSMconnection_policy"
@@ -103,22 +102,22 @@ resource "aws_iam_policy" "SSMconnection_policy" {
     {
       Version = "2012-10-17",
       Statement = [
-        #allow connection between instance and SSM bot
+        # allow connection between instance and SSM bot
         {
           Effect = "Allow",
           Action = "ssm:StartSession",
           Resource = [
             "arn:aws:ec2:eu-north-1:${data.aws_caller_identity.current.account_id}:instance/${aws_instance.server_for_db.id}",
             "arn:aws:ssm:*:*:document/AWS-StartSSHSession"
-            #amazon-ssm-agent as a daemon process that listens to aws
+            # amazon-ssm-agent as a daemon process that listens to aws
           ]
         },
-        #open channel to transmit data
+        # open channel to transmit data
         {
           Effect   = "Allow",
           Action   = "ssmmessages:OpenDataChannel",
           Resource = "arn:aws:ssm:*:*:session/$${aws:userid}-*"
-          #user id is used for preventing 3rd party interuptions
+          # user id is used for preventing 3rd party interuptions
 
         }
       ]
@@ -126,12 +125,14 @@ resource "aws_iam_policy" "SSMconnection_policy" {
   )
 }
 
-#linking
+# linking
 resource "aws_iam_role_policy_attachment" "SSM_policy_attachment_db" {
   role       = aws_iam_role.github_worker.name
   policy_arn = aws_iam_policy.SSMconnection_policy.arn
 }
+
 #!SECTION
+
 #SECTION - S3 custom bucket policy
 
 resource "aws_iam_policy" "S3-putObject_access" {
@@ -149,6 +150,7 @@ resource "aws_iam_policy" "S3-putObject_access" {
   })
 }
 
+# linking policy arm and role name
 resource "aws_iam_role_policy_attachment" "S3-putObject_access_attachement" {
   role       = aws_iam_role.Role-for-EC2.name
   policy_arn = aws_iam_policy.S3-putObject_access.arn

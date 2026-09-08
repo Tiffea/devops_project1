@@ -1,9 +1,9 @@
-#SECTION settings
+#SECTION - pre-settings
 terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0"
+      version = ">= 6.0"
     }
     http = {
       source  = "hashicorp/http"
@@ -12,20 +12,20 @@ terraform {
   }
 }
 
-#choose a region
+# choose a region
 provider "aws" {
   region = "eu-north-1"
 }
 
-#returns your AWS account id
+# returns your AWS account id
 data "aws_caller_identity" "current" {}
 
-#return your ip 
+# return your ip
 data "http" "my_ip" {
   url = "https://checkip.amazonaws.com/"
 }
 
-#return your current ip for TERRAFORM NEEDS (locally)
+# return your current ip for TERRAFORM NEEDS (locally)
 locals {
   my_ip = "${chomp(data.http.my_ip.response_body)}/32"
 }
@@ -51,12 +51,13 @@ resource "aws_instance" "devops_server" {
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
-    #metadata for a sserver now exists; session token is required
+    # metadata for a sserver now exists; session token is required
   }
   tags = {
     Name = "devops-project-server"
   }
 }
+
 #SECTION - public EIP for the server
 
 resource "aws_eip" "devops_eip" {
@@ -71,11 +72,11 @@ resource "aws_eip" "devops_eip" {
 output "new_server_ip" {
   value = aws_eip.devops_eip.public_ip
 }
-
+#!SECTION -end of eip section
 #!SECTION
-#!SECTION
 
-#SECTION DB server confugitation
+
+#SECTION - DB server confugitation
 resource "aws_instance" "server_for_db" {
   #checkov:skip=CKV_AWS_135: np EBS so far
   #checkov:skip=CKV_AWS_126: no monitoring so far
@@ -97,4 +98,31 @@ resource "aws_instance" "server_for_db" {
     Name = "devops-db-server"
   }
 }
+#!SECTION
+
+#SECTION - NAT as a server
+#NOTE - AWS limits outgoing internet bandwidth on EC2 instances to 5Gbps.
+#This means that the highest bandwidth that fck-nat can support (while remaining cost-effective) is 5Gbps.
+
+module "fck-nat" {
+  source = "git::https://github.com/RaJiska/terraform-aws-fck-nat.git?ref=v1.4.0"
+
+  name                 = "devops1-fck-nat"
+  vpc_id               = aws_vpc.devops1_vpc.id
+  subnet_id            = aws_subnet.devops1_public_subnet.id  
+  update_route_tables = true
+  instance_type = "t4g.nano"
+  #eip_allocation_ids = [aws_eip.nat_eip.id]
+
+  #it generates a route for me
+  route_tables_ids = {
+    private = aws_route_table.devops1_private_route_table.id
+  }
+  #it routes the traffic to the private table
+}
+
+#no need but drags additional cost if set
+# resource "aws_eip" "nat_eip" {
+#     tags = {Name = "devops1-fck-nat-eip"}
+# }
 #!SECTION
