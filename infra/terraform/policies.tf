@@ -194,3 +194,5 @@ resource "aws_iam_role_policy_attachment" "GetObject_access_policy_attachement" 
   role = aws_iam_role.GetObject_role.name
   policy_arn = aws_iam_policy.S3-getObject_access.arn
 }
+
+#!SECTION
