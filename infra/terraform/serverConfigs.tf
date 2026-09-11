@@ -105,8 +105,7 @@ resource "aws_instance" "server_for_db" {
 #This means that the highest bandwidth that fck-nat can support (while remaining cost-effective) is 5Gbps.
 
 module "fck-nat" {
-  source = "git::https://github.com/RaJiska/terraform-aws-fck-nat.git?ref=v1.4.0"
-
+  source = "git::https://github.com/RaJiska/terraform-aws-fck-nat.git?ref=56b876d"
   name                 = "devops1-fck-nat"
   vpc_id               = aws_vpc.devops1_vpc.id
   subnet_id            = aws_subnet.devops1_public_subnet.id  
