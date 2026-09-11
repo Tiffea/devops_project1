@@ -31,6 +31,7 @@
     compose_file_db: docker-compose-db.yml #empty variable name (no content)
     db_project_dir: /home/ubuntu/db
     postgres_password: "{{ lookup('env', 'POSTGRES_PASSWORD') }}"
+    backup_bucket_name: bucket-tiffea5656
   roles:
     - common
     - docker
