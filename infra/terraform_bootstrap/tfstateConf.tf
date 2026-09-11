@@ -59,7 +59,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "devops1-tf_bucket1_lcongf" {
 ##
 
 #dynamo db
+
 resource "aws_dynamodb_table" "devops1-dynamoDB" {
+  #checkov:skip=CKV_AWS_28: no need on this scale
+  #checkov:skip=CKV_AWS_119: default AWS-managed encryption is enough
   name         = "DynamoDB-for-tfstate"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
