@@ -1,9 +1,12 @@
 ---
+#1
 - name: Ensure db project directory exists
   file:
     path: "{{ db_project_dir }}"
     state: directory
     mode: '0755'
+    owner: ubuntu
+    group: ubuntu
 
 - name: copy db docker-compose-db.yml
   copy:
@@ -25,12 +28,17 @@
         postgres_data:
     dest: "{{ db_project_dir }}/{{ compose_file_db }}"
     mode: '0644'
+    owner: ubuntu
+    group: ubuntu
+
 - name: Create .env file with secrets
   copy:
     content: |
       POSTGRES_PASSWORD={{ postgres_password }}
     dest: "{{ db_project_dir }}/.env"
     mode: '0600'
+    owner: ubuntu
+    group: ubuntu
 
 - name: Pull latest Docker images
   command: docker compose -f {{ compose_file_db }} pull
@@ -49,7 +57,7 @@
   register: result
 
 
-
+#configure AWS tools
 - name: Check if AWS CLI is already installed
   command: aws --version
   register: aws_cli_check
@@ -72,8 +80,30 @@
 - name: Install AWS CLI
   command: /tmp/aws/install
   when: aws_cli_check.rc != 0
+###
 
 
+#avoid situation when script is not allowed to read root file ".env"
+- name: Ensure tha db project dir exists
+  file:
+    path: "{{ db_project_dir}}"
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+
+- name: Ensure backups directory exists
+  file:
+    path: "{{ db_project_dir }}/backups"
+    state: directory
+    mode: '0750'
+    owner: ubuntu
+    group: ubuntu
+
+###
+
+
+#script for s3 backups 
 - name: Deploy backup script
   copy:
     content: |
@@ -97,3 +127,4 @@
     minute: "0"
     hour: "3"
     job: "{{ db_project_dir }}/backup.sh >> {{ db_project_dir }}/backup.log 2>&1"
+    ###
