@@ -151,8 +151,46 @@ resource "aws_iam_policy" "S3-putObject_access" {
 }
 
 # linking policy arm and role name
-resource "aws_iam_role_policy_attachment" "S3-putObject_access_attachement" {
+resource "aws_iam_role_policy_attachment" "S3-putObject_access_attachment" {
   role       = aws_iam_role.Role-for-EC2.name
   policy_arn = aws_iam_policy.S3-putObject_access.arn
 }
 #!SECTION
+
+#Section - separate policy for Get action (least priveledge attitude - separate write / read )
+
+resource "aws_iam_policy" "S3-getObject_access" {
+  name        = "s3-Backup_policy-get-access"
+  description = "this policy allows to get objects from a bucket"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.devops1_bucket1.arn}/*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role" "GetObject_role" {
+  name = "GetObject_role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          AWS = data.aws_caller_identity.current.arn #how will perform this action: can also be Federated or Service
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "GetObject_access_policy_attachement" {
+  role = aws_iam_role.GetObject_role.name
+  policy_arn = aws_iam_policy.S3-getObject_access.arn
+}

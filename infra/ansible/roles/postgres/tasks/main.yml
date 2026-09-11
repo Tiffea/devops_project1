@@ -47,3 +47,53 @@
   args:
     chdir: "{{ db_project_dir }}"
   register: result
+
+
+
+- name: Check if AWS CLI is already installed
+  command: aws --version
+  register: aws_cli_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Download AWS CLI v2 installer
+  get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-{{ 'aarch64' if ansible_architecture == 'aarch64' else 'x86_64' }}.zip"
+    dest: /tmp/awscliv2.zip
+  when: aws_cli_check.rc != 0
+
+- name: Unzip AWS CLI installer
+  unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    remote_src: yes
+  when: aws_cli_check.rc != 0
+
+- name: Install AWS CLI
+  command: /tmp/aws/install
+  when: aws_cli_check.rc != 0
+
+
+- name: Deploy backup script
+  copy:
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      cd "{{ db_project_dir }}"
+      TIMESTAMP=$(date +%F-%H%M%S)
+      FILE="{{ db_project_dir }}/backups/todos-$TIMESTAMP.sql.gz"
+      docker compose -f {{ compose_file_db }} exec -T db pg_dump -U postgres todos | gzip > "$FILE"
+      aws s3 cp "$FILE" "s3://{{ backup_bucket_name }}/postgres-backups/$(basename "$FILE")"
+      find "{{ db_project_dir }}/backups" -name "todos-*.sql.gz" -mtime +2 -delete
+    dest: "{{ db_project_dir }}/backup.sh"
+    mode: '0750'
+    owner: ubuntu
+    group: ubuntu
+
+- name: Schedule nightly backup via cron
+  cron:
+    name: "postgres backup to s3"
+    user: ubuntu
+    minute: "0"
+    hour: "3"
+    job: "{{ db_project_dir }}/backup.sh >> {{ db_project_dir }}/backup.log 2>&1"
