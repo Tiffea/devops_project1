@@ -7,11 +7,11 @@ app = Flask(__name__)
 metrics = PrometheusMetrics(app)
 
 # BD connection
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-    'DATABASE_URL',
-    'postgresql://postgres:password@db:5432/todos'
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL", "postgresql://postgres:password@db:5432/todos"
 )
 db = SQLAlchemy(app)
+
 
 # BD model description
 class Todo(db.Model):
@@ -19,21 +19,28 @@ class Todo(db.Model):
     title = db.Column(db.String(200), nullable=False)
     done = db.Column(db.Boolean, default=False)
 
+
 with app.app_context():
     db.create_all()
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+
 @app.route("/health")
 def health():
     return "OK", 200
 
+
 @app.route("/todos", methods=["GET"])
 def get_todos():
     todos = Todo.query.all()
-    return jsonify([{"id": t.id, "title": t.title, "done": t.done} for t in todos])
+    return jsonify(
+        [{"id": t.id, "title": t.title, "done": t.done} for t in todos]
+    )
+
 
 @app.route("/todos", methods=["POST"])
 def create_todo():
@@ -41,7 +48,11 @@ def create_todo():
     todo = Todo(title=data["title"])
     db.session.add(todo)
     db.session.commit()
-    return jsonify({"id": todo.id, "title": todo.title, "done": todo.done}), 201
+    return (
+        jsonify({"id": todo.id, "title": todo.title, "done": todo.done}),
+        201,
+    )
+
 
 @app.route("/todos/<int:id>", methods=["DELETE"])
 def delete_todo(id):
@@ -50,6 +61,7 @@ def delete_todo(id):
         db.session.delete(todo)
         db.session.commit()
     return jsonify({"message": "Deleted"}), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

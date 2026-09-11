@@ -21,9 +21,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  linter:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install flake8
+        run: pip install flake8
+      
+      - name: flake8 check
+        run: flake8 app.py
+        working-directory: ./app
+
+
 
   build:
-    needs: secret-scan
+    needs: [secret-scan, linter]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -69,7 +89,7 @@ jobs:
 
 
   deploy:
-    needs: [build, TFconfig-check]
+    needs: [build, TFconfig-check, linter]
     runs-on: ubuntu-latest
     permissions: #only this part has rights to change sequrity group
       id-token: write
