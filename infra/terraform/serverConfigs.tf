@@ -118,17 +118,20 @@ module "fck-nat" {
   subnet_id            = aws_subnet.devops1_public_subnet.id  
   update_route_tables = true
   instance_type = "t4g.nano"
-  #eip_allocation_ids = [aws_eip.nat_eip.id]
+  ha_mode = false
+  use_ssh         = false
+  ssh_key_name    = "devops-key"
+  ssh_cidr_blocks = { ipv4 = [local.my_ip] } 
+  eip_allocation_ids = [aws_eip.nat_eip.id]
+  ##add ssh for debugging 
+  
 
-  #it generates a route for me
   route_tables_ids = {
     private = aws_route_table.devops1_private_route_table.id
   }
-  #it routes the traffic to the private table
 }
 
-#no need but drags additional cost if set
-# resource "aws_eip" "nat_eip" {
-#     tags = {Name = "devops1-fck-nat-eip"}
-# }
+resource "aws_eip" "nat_eip" {
+    tags = {Name = "devops1-fck-nat-eip"}
+}
 #!SECTION
