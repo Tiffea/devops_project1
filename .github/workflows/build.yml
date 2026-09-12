@@ -94,6 +94,19 @@ jobs:
       
       - name: Push docker image
         run: docker push tiffea/devops-project1:latest
+      
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: tiffea/devops-project1:latest
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cyclonedx.json
 
 
   TFconfig-check:
