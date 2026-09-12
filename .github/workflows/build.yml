@@ -21,6 +21,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  test:
+    needs: [secret-scan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: install python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+ 
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest
+        working-directory: ./app
+ 
+      - name: Run tests
+        run: pytest -v
+        working-directory: ./app
+ 
+
   linter:
     needs: [secret-scan]
     runs-on: ubuntu-latest

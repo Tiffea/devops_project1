@@ -56,7 +56,7 @@ def create_todo():
 
 @app.route("/todos/<int:id>", methods=["DELETE"])
 def delete_todo(id):
-    todo = Todo.query.get(id)
+    todo = db.session.get(Todo, id)
     if todo:
         db.session.delete(todo)
         db.session.commit()

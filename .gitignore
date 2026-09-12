@@ -13,6 +13,7 @@ pip-log.txt
 pip-delete-this-directory.txt
 .pytest_cache/
 .mypy_cache/
+*.db
 
 # =========================
 # IDE / OS
