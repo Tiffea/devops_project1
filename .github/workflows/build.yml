@@ -84,29 +84,33 @@ jobs:
           load: true
           tags: tiffea/devops-project1:latest
 
-      - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          image-ref: tiffea/devops-project1:latest
-          exit-code: '1'
-          severity: CRITICAL
-          ignore-unfixed: true
-      
-      - name: Push docker image
-        run: docker push tiffea/devops-project1:latest
-      
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
           image: tiffea/devops-project1:latest
           format: cyclonedx-json
           output-file: sbom.cyclonedx.json
-
+          
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
         with:
           name: sbom
           path: sbom.cyclonedx.json
+          
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: sbom
+          scan-ref: sbom.cyclonedx.json
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+      
+      - name: Push docker image
+        run: docker push tiffea/devops-project1:latest
+      
+
 
 
   TFconfig-check:
