@@ -194,5 +194,52 @@ resource "aws_iam_role_policy_attachment" "GetObject_access_policy_attachement" 
   role = aws_iam_role.GetObject_role.name
   policy_arn = aws_iam_policy.S3-getObject_access.arn
 }
+#!SECTION 
 
-#!SECTION
+#Policy for CI tf state check
+resource "aws_iam_role" "Github_tf-CI-ops_role" {
+  name = "Github-tf-CI-ops-role"
+  description = "Role for CI github tf-config secutiry check via OPA/conftest"
+  assume_role_policy = jsonencode(
+    {
+      Version = "2012-10-17"
+      Statement = {
+        Effect = "Allow"
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+        }
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:Tiffea/devops_project1:*"
+          }
+        }
+      }
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "tf_CI_ViewOnly-attachment" {
+  role = aws_iam_role.Github_tf-CI-ops_role.name
+  policy_arn = "arn:aws:iam::aws:policy/ViewOnlyAccess"
+}
+
+resource "aws_iam_policy" "tf-lock_table_access" {
+  name = "tf-state-lock-access"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"]
+      Resource = "arn:aws:dynamodb:eu-north-1:${data.aws_caller_identity.current.account_id}:table/DynamoDB-for-tfstate"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "tf-lock-attachement" {
+  role = aws_iam_role.Github_tf-CI-ops_role.name
+  policy_arn = aws_iam_policy.tf-lock_table_access.arn
+}
