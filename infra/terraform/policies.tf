@@ -214,7 +214,7 @@ resource "aws_iam_role" "Github_tf-CI-ops_role" {
             "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
           }
           StringLike = {
-            "token.actions.githubusercontent.com:sub" = "repo:Tiffea/devops_project1:*"
+            "token.actions.githubusercontent.com:sub" = "repo:Tiffea/devops_project1:environment:tf-check"
           }
         }
       }
