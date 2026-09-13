@@ -21,7 +21,7 @@ resource "aws_iam_role" "github_worker" {
               "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
             },
             StringLike = {
-              "token.actions.githubusercontent.com:sub" = "repo:Tiffea/devops_project1:*"
+              "token.actions.githubusercontent.com:sub" = "repo:Tiffea/devops_project1:environment:prod"
             }
           }
         }
@@ -223,7 +223,7 @@ resource "aws_iam_role" "Github_tf-CI-ops_role" {
 
 resource "aws_iam_role_policy_attachment" "tf_CI_ViewOnly-attachment" {
   role = aws_iam_role.Github_tf-CI-ops_role.name
-  policy_arn = "arn:aws:iam::aws:policy/ViewOnlyAccess"
+  policy_arn = "arn:aws:iam::aws:policy/job-function/ViewOnlyAccess"
 }
 
 resource "aws_iam_policy" "tf-lock_table_access" {
