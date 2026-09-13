@@ -141,6 +141,7 @@ jobs:
 
   deploy:
     needs: [build, TFconfig-check, linter]
+    environment: prod
     runs-on: ubuntu-latest
     permissions: #only this part has rights to change sequrity group
       id-token: write
